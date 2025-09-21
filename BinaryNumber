@@ -1,0 +1,98 @@
+/*
+ * Name: [Ami Raj]
+ * Assignment: Homework 1 - BinaryNumber
+ */
+
+import java.util.Arrays;
+
+public class BinaryNumber {
+    private int[] data;          
+    private boolean overflow;    
+
+    // Constructor 1: Creating a binary number of given length, filled with 0s
+    public BinaryNumber(int length) {
+        data = new int[length];
+        Arrays.fill(data, 0); 
+        overflow = false;
+    }
+
+    // Constructor 2: Creating a binary number from string
+    public BinaryNumber(String str) {
+        data = new int[str.length()];
+        for (int i = 0; i < str.length(); i++) {
+            char ch = str.charAt(str.length() - 1 - i); // little-endian
+            data[i] = Character.getNumericValue(ch);
+            if (data[i] != 0 && data[i] != 1) {
+                throw new IllegalArgumentException("Invalid binary digit in string");
+            }
+        }
+        overflow = false;
+    }
+
+    // Getting length of binary number
+    public int getLength() {
+        return data.length;
+    }
+
+    // Getting digit at a specific index
+    public int getDigit(int index) {
+        if (index < 0 || index >= data.length) {
+            System.out.println("Index out of bounds");
+            return -1;
+        }
+        return data[index];
+    }
+
+    // Converting a binary number to decimal
+    public int toDecimal() {
+        int decimalValue = 0;
+        for (int i = 0; i < data.length; i++) {
+            decimal += data[i] * (1 << i); // (1 << i) is 2^i
+        }
+        return decimalValue;
+    }
+
+    // Shifting right by 'amount' positions 
+    public void shiftR(int amount) {
+        int[] newData = new int[data.length + amount];
+        for (int i = 0; i < data.length; i++) {
+            newData[i + amount] = data[i];
+        }
+        data = newData;
+    }
+
+    // Adding another binary number
+    public void add(BinaryNumber aBinaryNumber) {
+        if (this.data.length != aBinaryNumber.data.length) {
+            System.out.println("Lengths do not match");
+            return;
+        }
+
+        int carry = 0;
+        for (int i = 0; i < data.length; i++) {
+            int sum = this.data[i] + aBinaryNumber.data[i] + carry;
+            this.data[i] = sum % 2; // store remainder
+            carry = sum / 2;        // update carry
+        }
+
+        if (carry > 0) {
+            overflow = true;
+        }
+    }
+
+    public void clearOverflow() {
+        overflow = false;
+    }
+
+    // Converting binary number to string
+    public String toString() {
+        if (overflow) {
+            return "Overflow";
+        }
+        String result = "";
+        for (int i = data.length - 1; i >= 0; i--) {
+            result += data[i];
+        }
+        return result;
+    }
+}
