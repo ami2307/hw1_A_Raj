@@ -1,6 +1,6 @@
 /*
- * Name: [Ami Raj]
- * Assignment: Homework 1 - BinaryNumber
+ * Name: Ami Raj
+ * Assignment: BinaryNumber Class
  */
 
 import java.util.Arrays;
@@ -9,32 +9,44 @@ public class BinaryNumber {
     private int[] data;          
     private boolean overflow;    
 
-    // Constructor 1: Creating a binary number of given length, filled with 0s
+    // Constructor 1: creating binary number of given length 
     public BinaryNumber(int length) {
+        if (length <= 0) {
+            System.out.println("Length must be positive. Defaulting to length = 1");
+            length = 1;
+        }
         data = new int[length];
-        Arrays.fill(data, 0); 
+        Arrays.fill(data, 0);
         overflow = false;
     }
 
-    // Constructor 2: Creating a binary number from string
+    // Constructor 2: creating binary number from string
     public BinaryNumber(String str) {
-        data = new int[str.length()];
-        for (int i = 0; i < str.length(); i++) {
-            char ch = str.charAt(str.length() - 1 - i); // little-endian
-            data[i] = Character.getNumericValue(ch);
-            if (data[i] != 0 && data[i] != 1) {
-                throw new IllegalArgumentException("Invalid binary digit in string");
+        if (str == null || str.length() == 0) {
+            System.out.println("Invalid input string, defaulting to 0");
+            data = new int[1];
+            data[0] = 0;
+        } else {
+            data = new int[str.length()];
+            for (int i = 0; i < str.length(); i++) {
+                char ch = str.charAt(str.length() - 1 - i); 
+                if (ch == '0' || ch == '1') {
+                    data[i] = ch - '0';
+                } else {
+                    System.out.println("Invalid digit '" + ch + "', defaulting to 0");
+                    data[i] = 0;
+                }
             }
         }
         overflow = false;
     }
 
-    // Getting length of binary number
+    // Get length
     public int getLength() {
         return data.length;
     }
 
-    // Getting digit at a specific index
+    // Get digit at index
     public int getDigit(int index) {
         if (index < 0 || index >= data.length) {
             System.out.println("Index out of bounds");
@@ -43,17 +55,21 @@ public class BinaryNumber {
         return data[index];
     }
 
-    // Converting a binary number to decimal
+    // Convert to decimal
     public int toDecimal() {
-        int decimalValue = 0;
+        int decimal = 0;
         for (int i = 0; i < data.length; i++) {
-            decimal += data[i] * (1 << i); // (1 << i) is 2^i
+            decimal += data[i] * (1 << i); // 2^i
         }
-        return decimalValue;
+        return decimal;
     }
 
-    // Shifting right by 'amount' positions 
+    // Shift right
     public void shiftR(int amount) {
+        if (amount < 0) {
+            System.out.println("Shift amount must be non-negative");
+            return;
+        }
         int[] newData = new int[data.length + amount];
         for (int i = 0; i < data.length; i++) {
             newData[i + amount] = data[i];
@@ -61,8 +77,12 @@ public class BinaryNumber {
         data = newData;
     }
 
-    // Adding another binary number
+    // Add another binary number
     public void add(BinaryNumber aBinaryNumber) {
+        if (aBinaryNumber == null) {
+            System.out.println("Cannot add null BinaryNumber");
+            return;
+        }
         if (this.data.length != aBinaryNumber.data.length) {
             System.out.println("Lengths do not match");
             return;
@@ -71,20 +91,21 @@ public class BinaryNumber {
         int carry = 0;
         for (int i = 0; i < data.length; i++) {
             int sum = this.data[i] + aBinaryNumber.data[i] + carry;
-            this.data[i] = sum % 2; // store remainder
-            carry = sum / 2;        // update carry
+            data[i] = sum % 2;
+            carry = sum / 2;
         }
 
-        if (carry > 0) {
+        if (carry == 1) {
             overflow = true;
         }
     }
 
+    // Clear overflow
     public void clearOverflow() {
         overflow = false;
     }
 
-    // Converting binary number to string
+    // Convert to string
     public String toString() {
         if (overflow) {
             return "Overflow";
